@@ -10,7 +10,8 @@ frontend/.env
 
 # Uploads
 backend/uploads/
-uploads/
+uploads/*
+!uploads/.gitkeep
 
 # Build files
 frontend/build/

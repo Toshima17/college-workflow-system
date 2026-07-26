@@ -4,6 +4,8 @@ const session = require("express-session")
 const cors = require("cors")
 const fs = require("fs")
 const path = require("path")
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 const authRoutes = require("./routes/auth")
 const requestRoutes = require("./routes/requests")
@@ -16,10 +18,18 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true })
 }
 
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+});
+
+app.use("/api/auth", loginLimiter);
+
+app.use(helmet());
 app.use(express.json())
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }))
 
@@ -39,6 +49,10 @@ app.use("/uploads", express.static("uploads"))
 
 app.use("/api/auth", authRoutes)
 app.use("/api/requests", requestRoutes)
+
+app.get("/", (req, res) => {
+  res.send("College Workflow Backend is Running");
+});
 
 const PORT = process.env.PORT || 5000
 
