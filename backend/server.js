@@ -11,6 +11,7 @@ const authRoutes = require("./routes/auth")
 const requestRoutes = require("./routes/requests")
 
 const app = express()
+app.set("trust proxy", 1);
 
 // ensure uploads directory exists
 const uploadsDir = path.join(__dirname, "uploads")
