@@ -24,7 +24,7 @@ const loginLimiter = rateLimit({
   max: 20,
 });
 
-app.use("/api/auth", loginLimiter);
+// app.use("/api/auth", loginLimiter);
 
 app.use(helmet());
 app.use(express.json())
