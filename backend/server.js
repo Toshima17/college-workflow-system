@@ -29,9 +29,12 @@ app.use(helmet());
 app.use(express.json())
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: [
+    "http://localhost:3000",
+    process.env.FRONTEND_URL
+  ],
   credentials: true
-}))
+}));
 
 app.use(session({
   secret: process.env.SESSION_SECRET || "workflow-secret",
