@@ -50,33 +50,44 @@ router.post("/login", async (req, res) => {
 
   try {
     const rows = await query(
-      "SELECT id, username, name, password, role, department FROM users WHERE username = ?",
-      [username]
-    )
+        "SELECT id, username, name, password, role, department FROM users WHERE username = ?",
+        [username]
+    );
 
-    const user = rows[0]
+    const user = rows[0];
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" })
+        return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const match = await bcrypt.compare(password, user.password)
+    const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return res.status(401).json({ error: "Invalid credentials" })
+        return res.status(401).json({ error: "Invalid credentials" });
     }
 
     req.session.user = {
-      id: user.id,
-      username: user.username,
-      name: user.name,
-      role: user.role,
-      department: user.department,
-    }
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        role: user.role,
+        department: user.department,
+    };
+    console.log("Before save:", req.session);
 
-    return res.json({ success: true })
-  } catch {
-    return res.status(401).json({ error: "Invalid credentials" })
+    req.session.save((err) => {
+        console.log("After save:", req.session);
+        if (err) {
+            console.error("Session save error:", err);
+            return res.status(500).json({ error: "Session save failed" });
+        }
+
+        return res.json({ success: true });
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(401).json({ error: "Invalid credentials" });
   }
 })
 
@@ -88,6 +99,7 @@ router.post("/logout", (req, res) => {
 })
 
 router.get("/me", (req, res) => {
+  console.log("Session in /me:", req.session);
   if (!req.session.user) {
     return res.status(401).json({ error: "Not authenticated" })
   }

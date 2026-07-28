@@ -38,9 +38,11 @@ app.use(cors({
 }));
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || "workflow-secret",
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  proxy : true,
+  
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
