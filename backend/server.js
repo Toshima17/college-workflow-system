@@ -52,6 +52,13 @@ app.options("*", cors());
 
 app.use("/uploads", express.static("uploads"))
 
+app.use((req, res, next) => {
+  console.log("METHOD:", req.method);
+  console.log("ORIGIN:", req.headers.origin);
+  console.log("HEADERS:", req.headers);
+  next();
+});
+
 app.use("/api/auth", authRoutes)
 app.use("/api/requests", requestRoutes)
 
