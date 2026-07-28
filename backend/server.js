@@ -53,9 +53,12 @@ app.options("*", cors());
 app.use("/uploads", express.static("uploads"))
 
 app.use((req, res, next) => {
+  console.log("================================");
   console.log("METHOD:", req.method);
+  console.log("URL:", req.originalUrl);
   console.log("ORIGIN:", req.headers.origin);
   console.log("HEADERS:", req.headers);
+  console.log("================================");
   next();
 });
 
