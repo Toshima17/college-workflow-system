@@ -1,14 +1,32 @@
-module.exports = function(req, res, next) {
-  if (!req.session.user) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+const jwt = require("jsonwebtoken");
 
-  req.user = req.session.user;
+module.exports = (req, res, next) => {
+    const authHeader = req.headers.authorization;
 
-  // reset the 30-min inactivity timer on every authenticated request
-  if (typeof req.session.touch === 'function') {
-    req.session.touch();
-  }
+    if (!authHeader) {
+        return res.status(401).json({
+            error: "No token"
+        });
+    }
 
-  next();
+    const token = authHeader.split(" ")[1];
+
+    try {
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET
+        );
+
+        req.user = decoded;
+
+        next();
+
+    } catch (err) {
+
+        return res.status(401).json({
+            error: "Invalid token"
+        });
+
+    }
 };
+

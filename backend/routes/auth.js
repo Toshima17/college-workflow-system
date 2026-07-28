@@ -1,6 +1,7 @@
 const router = require("express").Router()
 const bcrypt = require("bcrypt")
 const { query } = require("../db")
+const jwt = require("jsonwebtoken");
 
 router.post("/register", async (req, res) => {
   const { username, name, password, department } = req.body
@@ -66,23 +67,30 @@ router.post("/login", async (req, res) => {
         return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    req.session.user = {
+    const token = jwt.sign(
+    {
         id: user.id,
         username: user.username,
         name: user.name,
         role: user.role,
-        department: user.department,
-    };
-    console.log("Before save:", req.session);
+        department: user.department
+    },
+    process.env.JWT_SECRET,
+    {
+        expiresIn: "7d"
+    }
+    );
 
-    req.session.save((err) => {
-        console.log("After save:", req.session);
-        if (err) {
-            console.error("Session save error:", err);
-            return res.status(500).json({ error: "Session save failed" });
+    return res.json({
+        success: true,
+        token,
+        user: {
+            id: user.id,
+            username: user.username,
+            name: user.name,
+            role: user.role,
+            department: user.department
         }
-
-        return res.json({ success: true });
     });
 
   } catch (err) {
@@ -92,18 +100,26 @@ router.post("/login", async (req, res) => {
 })
 
 router.post("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.clearCookie("connect.sid")
-    return res.json({ success: true })
-  })
+    return res.json({ success: true });
 })
 
 router.get("/me", (req, res) => {
-  console.log("Session in /me:", req.session);
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Not authenticated" })
-  }
-  return res.json(req.session.user)
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({ error: "No token" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+        const user = jwt.verify(token, process.env.JWT_SECRET);
+
+        return res.json(user);
+
+    } catch (err) {
+        return res.status(401).json({ error: "Invalid token" });
+    }
 })
 
 module.exports = router

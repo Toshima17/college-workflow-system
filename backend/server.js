@@ -1,6 +1,6 @@
 require("dotenv").config()
 const express = require("express")
-const session = require("express-session")
+// const session = require("express-session")
 const cors = require("cors")
 const fs = require("fs")
 const path = require("path")
@@ -34,22 +34,22 @@ app.use(cors({
     "http://localhost:3000",
     process.env.FRONTEND_URL
   ],
-  credentials: true
+  // credentials: true
 }));
 
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  proxy : true,
+// app.use(session({
+//   secret: process.env.SESSION_SECRET,
+//   resave: false,
+//   saveUninitialized: false,
+//   proxy : true,
   
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    maxAge: 1800000
-  }
-}))
+//   cookie: {
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === "production",
+//     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+//     maxAge: 1800000
+//   }
+// }))
 
 app.use("/uploads", express.static("uploads"))
 
