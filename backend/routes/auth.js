@@ -31,14 +31,6 @@ router.post("/register", async (req, res) => {
       [username, name, hashed, department]
     )
 
-    req.session.user = {
-      id: result.insertId,
-      username,
-      name,
-      role: "STUDENT",
-      department,
-    }
-
     return res.status(201).json({ success: true })
   } catch (err) {
     console.error(err)
