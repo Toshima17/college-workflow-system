@@ -20,8 +20,16 @@ export default function Login() {
     setLoading(true)
     setError("")
     try {
-      const res = await api.post("/auth/login", { username, password })
-      if (res.data.success) nav("/dashboard")
+      const res = await api.post("/auth/login", {
+        username,
+        password,
+      });
+
+      if (res.data.success) {
+          localStorage.setItem("token", res.data.token);
+
+          nav("/dashboard");
+      }
     } catch {
       setError("Invalid username or password. Please try again.")
     } finally {
