@@ -31,24 +31,12 @@ app.use(express.json())
 
 app.use(cors({
   origin: true,
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-app.options("*", cors());
-// app.use(session({
-//   secret: process.env.SESSION_SECRET,
-//   resave: false,
-//   saveUninitialized: false,
-//   proxy : true,
-  
-//   cookie: {
-//     httpOnly: true,
-//     secure: process.env.NODE_ENV === "production",
-//     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-//     maxAge: 1800000
-//   }
-// }))
+app.options("*", cors({ origin: true, credentials: true }));
 
 app.use("/uploads", express.static("uploads"))
 
